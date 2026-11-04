@@ -1,40 +1,68 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import type { PokemonApiResponse } from "../types";
+import type { Pokemon } from "../types";
+import { fetchPokemon } from "../services/pokemonService";
 import DetallePokemon from "./DetallePokemon";
 
 export default function BuscadorPokemon() {
-  const [id, setId] = useState("");
-  const [pokemon, setPokemon] = useState<PokemonApiResponse | null>(null);
-  const [cargando, setCargando] = useState(false);
+  // Lo que el usuario escribe.
+  const [inputValue, setInputValue] = useState("25");
+
+  // La búsqueda confirmada al enviar el formulario.
+  const [query, setQuery] = useState("25");
+
+  // Estados de la petición.
+  const [pokemon, setPokemon] = useState<Pokemon | null>(null);
+  const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const buscar = (e: FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
+  useEffect(() => {
+    const controller = new AbortController();
 
-    if (!id) return;
+    const cargarPokemon = async (): Promise<void> => {
+      setCargando(true);
+      setError(null);
+      setPokemon(null);
 
-    setCargando(true);
-    setError(null);
-    setPokemon(null);
+      try {
+        const resultado = await fetchPokemon(
+          query,
+          controller.signal
+        );
 
-    fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("No se encontró el Pokémon con ese ID");
-        }
+        if (controller.signal.aborted) return;
 
-        return res.json() as Promise<PokemonApiResponse>;
-      })
-      .then((data) => setPokemon(data))
-      .catch((err: unknown) => {
+        setPokemon(resultado);
+      } catch (err: unknown) {
+        if (controller.signal.aborted) return;
+
+        setPokemon(null);
         setError(
           err instanceof Error
             ? err.message
-            : "Ocurrió un error al buscar el Pokémon"
-          );
-      })
-      .finally(() => setCargando(false));
+            : "Ocurrió un error inesperado."
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setCargando(false);
+        }
+      }
+    };
+
+    void cargarPokemon();
+
+    // Cancela la petición al cambiar query o desmontar el componente.
+    return () => controller.abort();
+  }, [query]);
+
+  const buscar = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+
+    const nuevaQuery = inputValue.trim().toLowerCase();
+
+    if (!nuevaQuery) return;
+
+    setQuery(nuevaQuery);
   };
 
   return (
@@ -46,30 +74,44 @@ export default function BuscadorPokemon() {
           className="buscador__input"
           type="number"
           min="1"
+          required
+          aria-label="ID del Pokémon"
           placeholder="ID del Pokémon (ej: 25)"
-          value={id}
-          onChange={(e) => setId(e.target.value)}
+          value={inputValue}
+          onChange={(event) => setInputValue(event.target.value)}
         />
+
         <button className="buscador__boton" type="submit">
           Buscar
         </button>
       </form>
 
-      {cargando && <p className="buscador__cargando">Cargando…</p>}
-      {error && <p className="buscador__error">{error}</p>}
+      {cargando && (
+        <p className="buscador__cargando" role="status">
+          Cargando…
+        </p>
+      )}
 
-      {pokemon && (
+      {error && (
+        <p className="buscador__error" role="alert">
+          {error}
+        </p>
+      )}
+
+      {!cargando && !error && pokemon && (
         <div className="tarjeta">
           <h3 className="tarjeta__nombre">
             #{pokemon.id} {pokemon.name}
           </h3>
-          {pokemon.sprites.front_default && (
+
+          {pokemon.imageUrl && (
             <img
               className="tarjeta__imagen"
-              src={pokemon.sprites.front_default}
+              src={pokemon.imageUrl}
               alt={pokemon.name}
             />
           )}
+
           <DetallePokemon pokemon={pokemon} />
         </div>
       )}
