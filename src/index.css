@@ -1,0 +1,157 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #2d3025;
+  background: #f4f1e8;
+  line-height: 1.5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.App {
+  width: min(100% - 2rem, 680px);
+  margin: 2rem auto;
+}
+
+.App > h1 {
+  text-align: center;
+}
+
+.buscador {
+  padding: 1.5rem;
+  background: white;
+  border: 1px solid #d9ddce;
+  border-radius: 16px;
+}
+
+.buscador__titulo {
+  margin-top: 0;
+}
+
+.buscador__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.buscador__input {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid #777b6d;
+  border-radius: 8px;
+}
+
+.buscador__boton {
+  padding: 0.75rem 1.25rem;
+  border: 0;
+  border-radius: 8px;
+  background: #4d602e;
+  color: white;
+  cursor: pointer;
+}
+
+.buscador__boton:hover {
+  background: #394922;
+}
+
+:focus-visible {
+  outline: 3px solid #795522;
+  outline-offset: 3px;
+}
+
+/* Mensajes de carga, error y éxito */
+.estado {
+  padding: 0.85rem;
+  border: 1px solid;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.estado--cargando {
+  color: #684b0a;
+  background: #fff4ce;
+}
+
+.estado--error {
+  color: #8a2020;
+  background: #ffeded;
+}
+
+.estado--exito {
+  color: #28502a;
+  background: #edf6e8;
+}
+
+/* Tarjeta del Pokémon */
+.tarjeta {
+  margin-top: 1.5rem;
+}
+
+.tarjeta__nombre {
+  text-align: center;
+  font-size: 1.5rem;
+  text-transform: capitalize;
+}
+
+.tarjeta__imagen {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.detalle h4 {
+  margin-bottom: 0.5rem;
+}
+
+/* Habilidades */
+.detalle__etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.detalle__etiquetas li {
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  background: #eef1e7;
+  overflow-wrap: anywhere;
+}
+
+/* Estadísticas */
+.detalle__stats {
+  padding: 0;
+  list-style: none;
+}
+
+.detalle__stats li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid #d9ddce;
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 480px) {
+  .buscador {
+    padding: 1rem;
+  }
+
+  .buscador__boton {
+    width: 100%;
+  }
+}

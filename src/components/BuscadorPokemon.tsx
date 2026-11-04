@@ -65,7 +65,7 @@ export default function BuscadorPokemon() {
     setQuery(nuevaQuery);
   };
 
-  return (
+    return (
     <section className="buscador">
       <h2 className="buscador__titulo">Buscador de Pokémon</h2>
 
@@ -86,35 +86,11 @@ export default function BuscadorPokemon() {
         </button>
       </form>
 
-      {cargando && (
-        <p className="buscador__cargando" role="status">
-          Cargando…
-        </p>
-      )}
-
-      {error && (
-        <p className="buscador__error" role="alert">
-          {error}
-        </p>
-      )}
-
-      {!cargando && !error && pokemon && (
-        <div className="tarjeta">
-          <h3 className="tarjeta__nombre">
-            #{pokemon.id} {pokemon.name}
-          </h3>
-
-          {pokemon.imageUrl && (
-            <img
-              className="tarjeta__imagen"
-              src={pokemon.imageUrl}
-              alt={pokemon.name}
-            />
-          )}
-
-          <DetallePokemon pokemon={pokemon} />
-        </div>
-      )}
+      <DetallePokemon
+        cargando={cargando}
+        error={error}
+        pokemon={pokemon}
+      />
     </section>
   );
 }
