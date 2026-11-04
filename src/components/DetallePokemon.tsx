@@ -1,4 +1,12 @@
-export default function DetallePokemon({ pokemon }) {
+import type { PokemonApiResponse } from "../types";
+
+interface DetallerPokemonProps {
+  pokemon: PokemonApiResponse;
+}
+
+export default function DetallePokemon({
+  pokemon, 
+}: DetallerPokemonProps) {
   return (
     <div className="detalle">
       <p className="detalle__tipos">
