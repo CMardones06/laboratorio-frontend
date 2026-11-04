@@ -27,3 +27,19 @@ export interface PokemonApiResponse {
     };
   }[];
 }
+
+export interface Pokemon {
+    id: number;
+    name: string;
+    types: string[];
+    abilities: string[];
+    imageUrl: string | null;
+
+    height: number;
+    weight: number;
+
+    stats: {
+        name: string;
+        value: number;
+    }[];
+}
