@@ -1,14 +1,17 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
+import type { PokemonApiResponse } from "../types";
 import DetallePokemon from "./DetallePokemon";
 
 export default function BuscadorPokemon() {
   const [id, setId] = useState("");
-  const [pokemon, setPokemon] = useState(null);
+  const [pokemon, setPokemon] = useState<PokemonApiResponse | null>(null);
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const buscar = (e) => {
+  const buscar = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
+
     if (!id) return;
 
     setCargando(true);
@@ -17,11 +20,20 @@ export default function BuscadorPokemon() {
 
     fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
       .then((res) => {
-        if (!res.ok) throw new Error("No se encontró ese Pokémon");
-        return res.json();
+        if (!res.ok) {
+          throw new Error("No se encontró el Pokémon con ese ID");
+        }
+
+        return res.json() as Promise<PokemonApiResponse>;
       })
       .then((data) => setPokemon(data))
-      .catch((err) => setError(err.message))
+      .catch((err: unknown) => {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Ocurrió un error al buscar el Pokémon"
+          );
+      })
       .finally(() => setCargando(false));
   };
 
@@ -51,11 +63,13 @@ export default function BuscadorPokemon() {
           <h3 className="tarjeta__nombre">
             #{pokemon.id} {pokemon.name}
           </h3>
-          <img
-            className="tarjeta__imagen"
-            src={pokemon.sprites.front_default}
-            alt={pokemon.name}
-          />
+          {pokemon.sprites.front_default && (
+            <img
+              className="tarjeta__imagen"
+              src={pokemon.sprites.front_default}
+              alt={pokemon.name}
+            />
+          )}
           <DetallePokemon pokemon={pokemon} />
         </div>
       )}
